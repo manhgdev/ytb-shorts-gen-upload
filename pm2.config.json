@@ -1,0 +1,15 @@
+{
+    "apps": [
+        {
+            "name": "ytb-shorts-gen-upload",
+            "script": "main.py",
+            "interpreter": "python3",
+            "autorestart": true,
+            "watch": false,
+            "log_date_format": "HH:mm 〉",
+            "env": {
+                "NODE_ENV": "production"
+            }
+        }
+    ]
+}
