@@ -11,20 +11,38 @@ pip install -r requirements.txt   # lần đầu
 uvicorn api_server:app --host 0.0.0.0 --port 8000
 ```
 
-### PM2 (chạy nền, production)
+### PM2 trên Linux (VPS / server)
+
+**Cài lần đầu (Ubuntu/Debian):**
 
 ```bash
-cd /path/to/ytb-shorts-gen-upload
-source venv/bin/activate && pip install -r requirements.txt
-mkdir -p logs
-
-# Sửa "cwd" trong pm2.config.json nếu path repo khác máy bạn
-pm2 start pm2.config.json
-pm2 save          # giữ sau reboot (tuỳ chọn: pm2 startup)
-pm2 logs ytb-shorts-api
-pm2 restart ytb-shorts-api
-pm2 stop ytb-shorts-api
+sudo apt update
+sudo apt install -y python3 python3-venv python3-pip ffmpeg
+sudo npm install -g pm2   # hoặc: curl -fsSL https://get.pnpm.io/install.sh …
 ```
+
+**Trong thư mục repo** (vd `~/ytb-shorts-gen-upload` — path tuỳ máy):
+
+```bash
+cd ~/ytb-shorts-gen-upload
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+mkdir -p logs
+chmod +x scripts/start_api.sh
+
+pm2 delete ytb-shorts-api 2>/dev/null || true
+pm2 start pm2.config.json    # phải chạy từ đúng thư mục repo (cwd .)
+pm2 save
+pm2 startup                  # in lệnh sudo, chạy theo hướng dẫn — tự bật sau reboot
+pm2 logs ytb-shorts-api
+```
+
+`pm2.config.json` dùng `scripts/start_api.sh` — **không** hardcode path Mac; clone repo ở đâu cũng được nếu `pm2 start` trong thư mục đó.
+
+Mở firewall port **8000** nếu bot gọi từ máy khác: `sudo ufw allow 8000/tcp`
+
+Bot `apiUrl`: `http://IP_VPS:8000` (không phải 127.0.0.1 nếu bot không cùng máy).
 
 Kiểm tra: http://127.0.0.1:8000/health → `{"ok":true}`
 
