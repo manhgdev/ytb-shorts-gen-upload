@@ -60,6 +60,8 @@ def default_settings() -> dict[str, Any]:
         "pexels_api_key": "",
         # Bảo vệ HTTP API (chỉ trên server, bot không cần gửi)
         "api_secret": "",
+        # URL công khai của API (OAuth redirect) — trùng bot YTB_SHORTS.apiUrl
+        "youtube_oauth_public_base": "http://127.0.0.1:8000",
         # Gemini
         "gemini_model": "auto",
         "gemini_models": [],
@@ -166,42 +168,6 @@ def flatten_user_settings(user: dict[str, Any]) -> dict[str, Any]:
     return flat
 
 
-def merge_settings(overrides: dict[str, Any] | None = None) -> dict[str, Any]:
-    """Gộp overrides lên mặc định; key None hoặc thiếu → giữ mặc định."""
-    data = default_settings()
-    if not overrides:
-        return _normalize_avatar_mode(data)
-    for key in SETTING_KEYS:
-        if key not in overrides:
-            continue
-        val = overrides[key]
-        if val is None:
-            continue
-        data[key] = val
-    return _normalize_avatar_mode(data)
-
-
-def _normalize_avatar_mode(data: dict[str, Any]) -> dict[str, Any]:
-    if data.get("avatar_mode"):
-        return data
-    if str(data.get("avatar_video_path") or "").strip() or str(data.get("avatar_image_path") or "").strip():
-        data["avatar_mode"] = "custom"
-    return data
-
-
-def load_settings(path: Path | None = None) -> dict[str, Any]:
-    cfg = path or SETTINGS_FILE
-    if not cfg.is_file():
-        return merge_settings(None)
-    try:
-        user = json.loads(cfg.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
-        return merge_settings(None)
-    if not isinstance(user, dict):
-        return merge_settings(None)
-    return merge_settings(flatten_user_settings(user))
-
-
 def _split_keys(raw: str) -> list[str]:
     if not raw:
         return []
@@ -216,6 +182,70 @@ def normalize_api_keys(value: Any) -> list[str]:
     if isinstance(value, str):
         return _split_keys(value)
     return []
+
+
+_API_KEY_MERGE_FIELDS = frozenset({"gemini_api_key", "pexels_api_key"})
+
+
+def _union_api_keys(*values: Any) -> list[str]:
+    """Gộp key: ưu tiên thứ tự đầu (body bot), sau đó key từ user_settings.json."""
+    seen: set[str] = set()
+    out: list[str] = []
+    for value in values:
+        for k in normalize_api_keys(value):
+            if k not in seen:
+                seen.add(k)
+                out.append(k)
+    return out
+
+
+def _apply_overrides(data: dict[str, Any], overrides: dict[str, Any]) -> dict[str, Any]:
+    for key in SETTING_KEYS:
+        if key not in overrides:
+            continue
+        val = overrides[key]
+        if val is None:
+            continue
+        if key in _API_KEY_MERGE_FIELDS:
+            data[key] = _union_api_keys(val, data.get(key))
+        else:
+            data[key] = val
+    return data
+
+
+def _base_settings(path: Path | None = None) -> dict[str, Any]:
+    """default_settings + user_settings.json (không gọi merge_settings — tránh đệ quy)."""
+    data = default_settings()
+    cfg = path or SETTINGS_FILE
+    if not cfg.is_file():
+        return _normalize_avatar_mode(data)
+    try:
+        user = json.loads(cfg.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return _normalize_avatar_mode(data)
+    if not isinstance(user, dict):
+        return _normalize_avatar_mode(data)
+    return _normalize_avatar_mode(_apply_overrides(data, flatten_user_settings(user)))
+
+
+def merge_settings(overrides: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Gộp overrides lên user_settings.json; gemini/pexels keys **cộng dồn**, không ghi đè hết pool."""
+    data = _base_settings()
+    if not overrides:
+        return data
+    return _normalize_avatar_mode(_apply_overrides(data, overrides))
+
+
+def _normalize_avatar_mode(data: dict[str, Any]) -> dict[str, Any]:
+    if data.get("avatar_mode"):
+        return data
+    if str(data.get("avatar_video_path") or "").strip() or str(data.get("avatar_image_path") or "").strip():
+        data["avatar_mode"] = "custom"
+    return data
+
+
+def load_settings(path: Path | None = None) -> dict[str, Any]:
+    return _base_settings(path)
 
 
 def gemini_keys(settings: dict[str, Any]) -> list[str]:

@@ -22,7 +22,7 @@ def oauth_public_base(explicit: str | None = None) -> str:
     from app.settings import load_settings
 
     s = load_settings()
-    raw = (s.get("youtube_oauth_public_base") or s.get("api", {}).get("youtube_oauth_public_base") or "").strip()
+    raw = str(s.get("youtube_oauth_public_base") or "").strip()
     if raw:
         return raw.rstrip("/")
     return "http://127.0.0.1:8000"

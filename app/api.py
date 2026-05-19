@@ -145,6 +145,25 @@ def youtube_register_account(
         raise HTTPException(400, str(e)) from e
 
 
+@app.get("/v1/youtube/oauth/setup")
+def youtube_oauth_setup(public_base: str = ""):
+    """Hướng dẫn redirect URI cần thêm trên Google Cloud (mở trình duyệt)."""
+    from app.youtube_oauth import oauth_public_base
+
+    base = oauth_public_base(public_base or None)
+    redirect = f"{base}/v1/youtube/oauth/callback"
+    return {
+        "public_base": base,
+        "redirect_uri": redirect,
+        "google_console": "https://console.cloud.google.com/apis/credentials",
+        "steps": [
+            "Mở Google Cloud → Credentials → OAuth 2.0 Client ID (Desktop hoặc Web)",
+            f"Thêm Authorized redirect URI: {redirect}",
+            "Telegram: /youtube → 👤 → ➕ Thêm account → 🔗 Đăng nhập Google",
+        ],
+    }
+
+
 @app.get("/v1/youtube/oauth/callback")
 def youtube_oauth_callback(code: str = "", state: str = "", error: str = ""):
     """Google redirect sau khi user Allow — hiển thị trang thành công/lỗi."""
