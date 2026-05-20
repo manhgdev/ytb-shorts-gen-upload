@@ -81,6 +81,17 @@ http://127.0.0.1:8000/v1/youtube/oauth/callback
 
 Reload: `/cmd load youtube` · `/cmd load uploadytb`
 
+## PM2 — API + lịch 3 video/ngày (một lệnh)
+
+```bash
+cp schedule.config.example.json schedule.config.json
+chmod +x scripts/install_pm2.sh
+./scripts/install_pm2.sh
+pm2 startup && pm2 save
+```
+
+API + 3 slot (12:00 / 17:00 / 21:00 giờ Mỹ). Chi tiết: [docs/SCHEDULE.md](./docs/SCHEDULE.md)
+
 ## CLI (tuỳ chọn, không bắt buộc)
 
 ```bash

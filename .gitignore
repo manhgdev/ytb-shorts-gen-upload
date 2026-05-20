@@ -1,5 +1,6 @@
 venv/
 logs/
+# schedule.config.json
 __pycache__/
 *.py[cod]
 # .env
@@ -8,10 +9,10 @@ __pycache__/
 # credentials/youtube_token.json
 # credentials/youtube_tokens/*
 # !credentials/youtube_tokens/.gitkeep
-# assets/audio_clips/*
-# assets/video_clips/*
-# assets/temp/*
-# assets/final/*
-# assets/uploads/avatars/*
-# !assets/uploads/avatars/.gitkeep
-# !assets/**/.gitkeep
+assets/audio_clips/*
+assets/video_clips/*
+assets/temp/*
+assets/final/*
+assets/uploads/avatars/*
+!assets/uploads/avatars/.gitkeep
+!assets/**/.gitkeep
