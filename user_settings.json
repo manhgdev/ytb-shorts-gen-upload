@@ -1,0 +1,121 @@
+{
+  "api": {
+    "api_secret": "",
+    "youtube_oauth_public_base": "http://127.0.0.1:8000",
+    "gemini_api_key": [
+      "AIzaSyARM5LKh_6AXirKFX3o9hadf2fs_L7Bn4Y",
+      "AIzaSyAonnz1NhhnJsyO2iAsqvJ-FU-bqWN_-cA",
+      "AIzaSyCyJajcG6IR4OnaLmWzeNE7rlxLfe9nYxI",
+      "AIzaSyD-BZa350EZ96m3Y2F01gD-_EWucmBC_uI",
+      "AIzaSyCD6ZMAQFKwEN8lnbKu2fuIQjsiWAo47ls",
+      "AIzaSyAK2WMMRHf5t2eHTzw9stcPzbM2oFrScrs",
+      "AIzaSyBnqmncTLl_ta0BBOKJQVjhlHWn1bEEa18",
+      "AIzaSyDVpg4mnoTr81PKzHAIsPEM56E8LtAUkCc",
+      "AIzaSyCjn8hQZUriy2XSWaAshg-iZH7UORfv2Ns",
+      "AIzaSyButBroFFEBB2jhH5HgB3LMWGXU2wDBaZg",
+      "AIzaSyAc4V1IwMIGr6pMvK04Xc3qFjrhd1jIVCE",
+      "AIzaSyBeZlJO3srydqMtW05IY3EZl_D0lPQ1iGk"
+    ],
+    "pexels_api_key": [
+      "F8gTCcyPacpwQtt8Ooqr03Q4itYURtLOT1YtmSCrsn1jdq4PGHlJsYol",
+      "TFz0rrFkBNqPLrQBNWlnrMZSmv93XeJNpzkGKI8B0AtUPFbV1oVrHn81",
+      "I5CetsHfJmruh9yWxbZa9mfNUF636UIiGVrHL65QKAOW2YgjCbVyAdtb",
+      "jmmkftnfdiMtiYtws30gNcLS1Lvf70Tok9gKrJMTo1BfDn8UO6ax8aOZ",
+      "mJaUZk7X14jvTZkDAj8qupJswakppefijXuFwl2uUDYyuYwdWtW0XsYC",
+      "KpbcUXZuaXHO6fQd8qydG41kiMrUjNPKO7WKcaoaehJsmETwnG0sYw64",
+      "wgFOv6SxwsaqBi8v4gZAE61OLC6pzdzvPBfOcbk3RryPbjnfVk15nd3k",
+      "LMO4hYLTK5TuafvaytbwSHe6TnIgCE2MwVktaSafGTTgd9QOwJuKeYDM",
+      "76uZP0X8jbz7hg3SVjr8j9SlQ2NHnGfoTJYXmjw3maq7QeKXr2LYp0jL",
+      "z1BKC3Ayk8IEFhbbc1Sch107P5YtRtWSLThvOh1VQIKsiJqXMziDSy6l",
+      "b1bunK1YfgCnmyHeRASsJso5e04sacF5iuE6OgFjTf681fsRQ8hEvPqA"
+    ]
+  },
+
+  "gemini": {
+    "gemini_model": "auto",
+    "gemini_models": [],
+    "gemini_retry_delay_seconds": 60,
+    "gemini_max_retries": 4
+  },
+
+  "content": {
+    "language": "en",
+    "topic_prompt": "Give me 1 specific, viral, and engaging topic for a Short Documentary. return ONLY the topic name.",
+    "use_manual_topic": false,
+    "manual_topic": "",
+    "script_extra_instructions": ""
+  },
+
+  "video": {
+    "video_mode": "short",
+    "min_scenes": null,
+    "max_scenes": null,
+    "words_per_scene": null
+  },
+
+  "tts": {
+    "voice": null,
+    "speech_rate": null
+  },
+
+  "output": {
+    "output_dir": "assets/final",
+    "output_filename": null
+  },
+
+  "avatar": {
+    "avatar_mode": "custom",
+    "avatar_video_path": "assets/avatar/avatars.mp4",
+    "avatar_image_path": "assets/avatar/avatars.png",
+    "avatar_scenes": 2,
+    "avatar_scene_numbers": []
+  },
+
+  "render": {
+    "render_seed": null,
+    "stock_force_refresh": false,
+    "pexels_per_page": 5
+  },
+
+  "pipeline": {
+    "clean_cache": true
+  },
+
+  "youtube_account": {
+    "youtube_upload": false,
+    "youtube_account_id": "LylyTaks1199",
+    "youtube_channel_id": "",
+    "youtube_client_secrets_path": "credentials/youtube_client_secret.json",
+    "youtube_token_path": "credentials/youtube_tokens/LylyTaks1199.json",
+    "youtube_privacy": "public",
+    "youtube_category_id": "22",
+    "youtube_made_for_kids": false,
+    "youtube_recording_location": "United States"
+  },
+
+  "youtube_seo": {
+    "youtube_title": "",
+    "youtube_description": "",
+    "youtube_tags": [],
+    "youtube_auto_seo": true,
+    "youtube_random_title": true,
+    "youtube_seo_extra_instructions": ""
+  },
+
+  "youtube_thumbnail": {
+    "youtube_thumbnail_enabled": true,
+    "youtube_thumbnail_source": "avatar_image",
+    "youtube_thumbnail_mode": "auto",
+    "youtube_thumbnail_at_sec": null,
+    "youtube_thumbnail_text": "",
+    "youtube_thumbnail_accent": "WATCH",
+    "youtube_thumbnail_text_zone_top": 0.52,
+    "youtube_thumbnail_text_align": "center",
+    "youtube_thumbnail_text_top_padding": 0.05,
+    "youtube_thumbnail_ai_text": true
+  },
+
+  "shorts_feed": {
+    "shorts_hook_intro_seconds": 0.85
+  }
+}
