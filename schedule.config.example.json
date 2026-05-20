@@ -8,7 +8,6 @@
   "output_prefix": "auto",
   "use_manual_topic": false,
   "manual_topic": "",
-  "slots_comment": "Giờ theo timezone — 3 khung US xem Shorts cao (ET): trưa, sau giờ làm, prime time",
   "slots": [
     { "hour": 12, "minute": 0, "label": "US lunch peak (12:00 ET)" },
     { "hour": 17, "minute": 0, "label": "US after-work (5:00 PM ET)" },

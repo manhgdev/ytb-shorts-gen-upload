@@ -13,22 +13,20 @@ chmod +x scripts/install_pm2.sh
 pm2 startup                 # làm theo lệnh sudo → tự bật sau reboot
 ```
 
-Gồm **4 process** PM2:
+Chỉ **2 app** PM2:
 
 | Tên | Việc |
 |-----|------|
-| `ytb-shorts-api` | API uvicorn (bot) — luôn bật |
-| `ytb-schedule-1200` | 12:00 ET — tạo + upload 1 video |
-| `ytb-schedule-1700` | 17:00 ET |
-| `ytb-schedule-2100` | 21:00 ET |
+| `ytb-shorts-api` | API uvicorn (bot) |
+| `ytb-schedule` | **1 daemon** — đến 12:00 / 17:00 / 21:00 ET thì tạo video (đọc `schedule.config.json`) |
 
 ```bash
 pm2 status
-pm2 logs ytb-schedule-1200
+pm2 logs ytb-schedule
 ./scripts/scheduled_create.sh test-run   # thử ngay, không đợi giờ
 ```
 
-Đổi giờ: sửa `schedule.config.json` → `./venv/bin/python scripts/build_pm2_config.py` → `pm2 reload pm2.config.json`
+Đổi giờ: sửa `slots` trong `schedule.config.json` → `pm2 restart ytb-schedule`
 
 **Không** dùng thêm `install_schedule.sh` (cron hệ thống) nếu đã dùng PM2 — tránh chạy trùng 2 lần.
 

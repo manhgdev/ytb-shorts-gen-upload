@@ -16,56 +16,17 @@
       }
     },
     {
-      "name": "ytb-schedule-1200",
-      "script": "./scripts/scheduled_create.sh",
-      "args": "US lunch peak (12:00 ET)",
-      "interpreter": "bash",
+      "name": "ytb-schedule",
+      "script": "./scripts/schedule_daemon.py",
+      "interpreter": "./venv/bin/python",
       "cwd": ".",
-      "cron_restart": "0 12 * * *",
-      "autorestart": false,
       "watch": false,
+      "autorestart": true,
       "log_date_format": "YYYY-MM-DD HH:mm:ss",
-      "out_file": "logs/pm2-schedule-1200.log",
-      "error_file": "logs/pm2-schedule-1200-error.log",
+      "error_file": "logs/pm2-schedule-error.log",
+      "out_file": "logs/pm2-schedule.log",
       "merge_logs": true,
       "env": {
-        "TZ": "America/New_York",
-        "PYTHONUNBUFFERED": "1"
-      }
-    },
-    {
-      "name": "ytb-schedule-1700",
-      "script": "./scripts/scheduled_create.sh",
-      "args": "US after-work (5:00 PM ET)",
-      "interpreter": "bash",
-      "cwd": ".",
-      "cron_restart": "0 17 * * *",
-      "autorestart": false,
-      "watch": false,
-      "log_date_format": "YYYY-MM-DD HH:mm:ss",
-      "out_file": "logs/pm2-schedule-1700.log",
-      "error_file": "logs/pm2-schedule-1700-error.log",
-      "merge_logs": true,
-      "env": {
-        "TZ": "America/New_York",
-        "PYTHONUNBUFFERED": "1"
-      }
-    },
-    {
-      "name": "ytb-schedule-2100",
-      "script": "./scripts/scheduled_create.sh",
-      "args": "US prime time (9:00 PM ET)",
-      "interpreter": "bash",
-      "cwd": ".",
-      "cron_restart": "0 21 * * *",
-      "autorestart": false,
-      "watch": false,
-      "log_date_format": "YYYY-MM-DD HH:mm:ss",
-      "out_file": "logs/pm2-schedule-2100.log",
-      "error_file": "logs/pm2-schedule-2100-error.log",
-      "merge_logs": true,
-      "env": {
-        "TZ": "America/New_York",
         "PYTHONUNBUFFERED": "1"
       }
     }
