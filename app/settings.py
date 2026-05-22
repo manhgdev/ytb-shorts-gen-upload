@@ -113,7 +113,7 @@ def default_settings() -> dict[str, Any]:
         # false = không phải "Made for Kids" (nội dung đại chúng / teen OK)
         "youtube_made_for_kids": False,
         # Vị trí quay (hiển thị trên Studio): mô tả văn bản, vd "United States". Rỗng = không gửi.
-        "youtube_recording_location": "United States",
+        "youtube_recording_location": "",
         # Thumbnail: frame + chữ hook lớn (Pillow) → upload YouTube
         "youtube_thumbnail_enabled": True,
         # avatar_image = assets/avatar/avatars.png (hoặc avatar_image_path); video = cắt frame MP4

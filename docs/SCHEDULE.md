@@ -2,33 +2,25 @@
 
 Tạo + upload YouTube theo `user_settings.json` hiện có.
 
-## Cài bằng PM2 (khuyến nghị — thoát SSH vẫn chạy)
+## Cài Linux — PM2 **1 app** (`ytb-shorts`)
 
 ```bash
-cd ~/ytb-shorts-gen-upload
-npm install -g pm2          # một lần
-cp schedule.config.example.json schedule.config.json
-chmod +x scripts/install_pm2.sh
-./scripts/install_pm2.sh
-pm2 startup                 # làm theo lệnh sudo → tự bật sau reboot
+./scripts/install_linux.sh
+pm2 startup
 ```
 
-Chỉ **2 app** PM2:
-
-| Tên | Việc |
-|-----|------|
-| `ytb-shorts-api` | API uvicorn (bot) |
-| `ytb-schedule` | **1 daemon** — đến 12:00 / 17:00 / 21:00 ET thì tạo video (đọc `schedule.config.json`) |
+| | |
+|---|---|
+| PM2 | **1 process** `ytb-shorts` → `scripts/pm2_main.sh` → `schedule_daemon.py` |
+| Kênh | `credentials/youtube_tokens/LylyTaks1199.json` + `schedule.config.json` → `youtube_account_id` |
+| Giờ | 12:00 / 17:00 / 21:00 `America/New_York` |
 
 ```bash
-pm2 status
-pm2 logs ytb-schedule
-./scripts/scheduled_create.sh test-run   # thử ngay, không đợi giờ
+pm2 logs ytb-shorts
+./scripts/scheduled_create.sh test-run
 ```
 
-Đổi giờ: sửa `slots` trong `schedule.config.json` → `pm2 restart ytb-schedule`
-
-**Không** dùng thêm `install_schedule.sh` (cron hệ thống) nếu đã dùng PM2 — tránh chạy trùng 2 lần.
+API bot (nếu cần) chạy **riêng**, không nằm trong PM2 này — xem [LINUX_INSTALL.md](./LINUX_INSTALL.md).
 
 ---
 

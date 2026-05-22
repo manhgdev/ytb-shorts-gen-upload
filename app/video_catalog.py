@@ -358,14 +358,16 @@ def delete_video_entry(ref: str, *, remove_file: bool = True) -> dict[str, Any]:
 
 def metadata_for_upload(entry: dict[str, Any]) -> dict[str, Any]:
     """Chuẩn hóa title/description/tags để gọi upload_video."""
+    from app.youtube_seo import sanitize_youtube_tags
+
     title = (entry.get("title") or entry.get("topic") or "YouTube Short").strip()
     desc = (entry.get("description") or "").strip()
-    tags = entry.get("tags") or []
+    tags = sanitize_youtube_tags(entry.get("tags") or [])
     if not desc and entry.get("topic"):
         desc = f"{entry['topic']}\n\n#Shorts"
     return {
         "topic": entry.get("topic") or title,
         "title": title,
         "description": desc,
-        "tags": tags if isinstance(tags, list) else [],
+        "tags": tags,
     }

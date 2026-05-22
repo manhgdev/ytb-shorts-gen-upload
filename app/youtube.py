@@ -15,7 +15,7 @@ from googleapiclient.http import MediaFileUpload
 from app.settings import ROOT
 from app.utils import media_duration_seconds, media_video_size, resolve_path
 from app.thumbnail import generate_thumbnail, upload_thumbnail
-from app.youtube_seo import apply_seo_to_meta
+from app.youtube_seo import apply_seo_to_meta, sanitize_youtube_tags
 
 SHORTS_MAX_SECONDS = 60
 
@@ -455,11 +455,11 @@ def _apply_shorts_defaults(meta: dict[str, Any]) -> dict[str, Any]:
     if "#shorts" not in desc.lower():
         meta["description"] = f"{desc}\n\n#Shorts #YouTubeShorts"[:5000]
 
-    tags = list(meta.get("tags") or [])
+    tags = sanitize_youtube_tags(meta.get("tags") or [])
     for t in ("shorts", "youtubeshorts", "short"):
-        if t not in [x.lower() for x in tags]:
-            tags.append(t)
-    meta["tags"] = tags[:30]
+        if t.lower() not in [x.lower() for x in tags]:
+            tags = sanitize_youtube_tags(tags + [t])
+    meta["tags"] = tags
     return meta
 
 
@@ -543,7 +543,7 @@ def _meta_from_settings(
     return {
         "title": title[:100],
         "description": desc[:5000],
-        "tags": tags[:30],
+        "tags": sanitize_youtube_tags(tags),
         "privacy": privacy,
         "category_id": category_id,
         "channel_id": channel_id,
@@ -587,12 +587,18 @@ def upload_video(
     if description is not None:
         meta["description"] = description[:5000]
     if tags is not None:
-        meta["tags"] = [str(t).strip() for t in tags if str(t).strip()][:30]
+        meta["tags"] = sanitize_youtube_tags(tags)
     if privacy and privacy.lower() in VALID_PRIVACY:
         meta["privacy"] = privacy.lower()
     if channel_id:
         meta["channel_id"] = channel_id.strip()
 
+    meta["tags"] = sanitize_youtube_tags(meta.get("tags") or [])
+    print(f"[youtube] upload Shorts: {meta['title']} ({meta['privacy']})")
+    print(f"[youtube] tags: {len(meta['tags'])} ({sum(len(t) for t in meta['tags'])} chars)")
+
+    loc_desc = (meta.get("recording_location") or "").strip()
+    insert_parts = "snippet,status"
     body = {
         "snippet": {
             "title": meta["title"],
@@ -605,8 +611,6 @@ def upload_video(
             "selfDeclaredMadeForKids": bool(s.get("youtube_made_for_kids", False)),
         },
     }
-    loc_desc = (meta.get("recording_location") or "").strip()
-    insert_parts = "snippet,status"
     if loc_desc:
         body["recordingDetails"] = {"locationDescription": loc_desc[:1000]}
         insert_parts = "snippet,status,recordingDetails"
@@ -616,7 +620,6 @@ def upload_video(
     if meta["channel_id"]:
         insert_kwargs["channelId"] = meta["channel_id"]
 
-    print(f"[youtube] upload Shorts: {meta['title']} ({meta['privacy']})")
     _validate_shorts_video(path)
     media = MediaFileUpload(str(path), chunksize=8 * 1024 * 1024, resumable=True)
     try:

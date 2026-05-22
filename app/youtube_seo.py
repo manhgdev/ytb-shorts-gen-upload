@@ -1,10 +1,16 @@
 from __future__ import annotations
 
 import random
+import re
 from typing import Any
 
 from app.brain import ContentBrain
 from app.settings import gemini_keys, model_chain, topic_prompt, video_cfg
+
+# YouTube API: mỗi tag ≤30 ký tự, tổng tất cả tag ≤500 ký tự
+_TAG_MAX_LEN = 30
+_TAGS_MAX_TOTAL_CHARS = 500
+_TAGS_MAX_COUNT = 25
 
 
 def _parse_tags(raw: Any) -> list[str]:
@@ -13,6 +19,27 @@ def _parse_tags(raw: Any) -> list[str]:
     if isinstance(raw, list):
         return [str(t).strip() for t in raw if str(t).strip()]
     return []
+
+
+def sanitize_youtube_tags(raw: Any) -> list[str]:
+    """Lọc tag hợp lệ YouTube — tránh lỗi invalidTags (tổng >500 ký tự, ký tự lạ)."""
+    out: list[str] = []
+    total = 0
+    seen: set[str] = set()
+    for item in _parse_tags(raw):
+        t = re.sub(r"[<>]", "", str(item).strip().lstrip("#"))
+        if not t:
+            continue
+        t = t[:_TAG_MAX_LEN]
+        key = t.lower()
+        if key in seen:
+            continue
+        if out and total + len(t) > _TAGS_MAX_TOTAL_CHARS:
+            break
+        seen.add(key)
+        out.append(t)
+        total += len(t)
+    return out[:_TAGS_MAX_COUNT]
 
 
 def needs_youtube_seo(settings: dict[str, Any]) -> bool:
@@ -83,7 +110,7 @@ def _normalize_seo(data: dict[str, Any]) -> dict[str, Any]:
     tags = data.get("tags")
     if not isinstance(tags, list):
         tags = []
-    tags = [str(t).strip().lstrip("#") for t in tags if str(t).strip()][:30]
+    tags = sanitize_youtube_tags(tags)
 
     hashtags = data.get("hashtags")
     if not isinstance(hashtags, list):
@@ -152,7 +179,7 @@ def prepare_video_metadata(
             "title": title[:100],
             "title_variants": [title[:100]],
             "description": manual_desc[:5000],
-            "tags": manual_tags[:30],
+            "tags": sanitize_youtube_tags(manual_tags),
             "hashtags": [],
         }
 
@@ -177,7 +204,7 @@ def prepare_video_metadata(
         "title": title[:100],
         "title_variants": seo.get("title_variants") or [title[:100]],
         "description": desc[:5000],
-        "tags": tags[:30],
+        "tags": sanitize_youtube_tags(tags),
         "hashtags": seo.get("hashtags") or [],
     }
 
@@ -213,7 +240,7 @@ def apply_seo_to_meta(
     return {
         "title": title[:100],
         "description": desc[:5000],
-        "tags": tags[:30],
+        "tags": sanitize_youtube_tags(tags),
         "title_variants": seo.get("title_variants") or [],
         "hashtags": seo.get("hashtags") or [],
     }

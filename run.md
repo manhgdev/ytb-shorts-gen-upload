@@ -81,16 +81,15 @@ http://127.0.0.1:8000/v1/youtube/oauth/callback
 
 Reload: `/cmd load youtube` · `/cmd load uploadytb`
 
-## PM2 — API + lịch 3 video/ngày (một lệnh)
+## Linux — PM2 **1 app** auto đăng `LylyTaks1199` (3 video/ngày)
 
 ```bash
-cp schedule.config.example.json schedule.config.json
-chmod +x scripts/install_pm2.sh
-./scripts/install_pm2.sh
+chmod +x scripts/install_linux.sh
+./scripts/install_linux.sh
 pm2 startup && pm2 save
 ```
 
-API + 3 slot (12:00 / 17:00 / 21:00 giờ Mỹ). Chi tiết: [docs/SCHEDULE.md](./docs/SCHEDULE.md)
+Chỉ `ytb-shorts` trong `pm2 status`. Chi tiết: [docs/LINUX_INSTALL.md](./docs/LINUX_INSTALL.md)
 
 ## CLI (tuỳ chọn, không bắt buộc)
 
