@@ -29,8 +29,11 @@ if [[ ! -f "$ROOT/user_settings.json" ]]; then
   exit 1
 fi
 
-# Đọc config bằng Python (không cần jq)
-read -r ENABLED TZ_NAME ACCOUNT CHANNEL PRIVACY LANG PREFIX USE_MANUAL MANUAL_TOPIC <<< "$(
+# Đọc config (mỗi dòng một giá trị — read <<< chỉ lấy dòng 1 → account/prefix trống)
+_cfg=()
+while IFS= read -r _line || [[ -n "$_line" ]]; do
+  _cfg+=("$_line")
+done < <(
   "$PYTHON" - <<'PY' "$CONFIG"
 import json, sys
 from pathlib import Path
@@ -49,11 +52,25 @@ print(c.get("output_prefix", "auto"))
 print("true" if c.get("use_manual_topic") else "false")
 print((c.get("manual_topic") or "").replace(" ", "_")[:40])
 PY
-)"
+)
+ENABLED="${_cfg[0]:-}"
+TZ_NAME="${_cfg[1]:-America/New_York}"
+ACCOUNT="${_cfg[2]:-LylyTaks1199}"
+CHANNEL="${_cfg[3]:-}"
+PRIVACY="${_cfg[4]:-public}"
+LANG="${_cfg[5]:-en}"
+PREFIX="${_cfg[6]:-auto}"
+USE_MANUAL="${_cfg[7]:-false}"
+MANUAL_TOPIC="${_cfg[8]:-}"
 
 if [[ "$ENABLED" != "true" ]]; then
   log "disabled in config — skip"
   exit 0
+fi
+
+if [[ -z "$ACCOUNT" ]]; then
+  log "ERROR: youtube_account_id trống trong $CONFIG"
+  exit 1
 fi
 
 export TZ="$TZ_NAME"
