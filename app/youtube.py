@@ -55,9 +55,14 @@ def _read_token_scopes(token: Path) -> list[str]:
         scopes = data.get("scopes")
         if isinstance(scopes, list) and scopes:
             return [str(s) for s in scopes]
+        # Một số token cũ lưu "scope" dạng string cách nhau bởi khoảng trắng.
+        scope_str = data.get("scope")
+        if isinstance(scope_str, str) and scope_str.strip():
+            return [s for s in scope_str.strip().split() if s]
     except (OSError, json.JSONDecodeError):
         pass
-    return list(SCOPES)
+    # Fallback an toàn cho token cũ: chỉ cần upload scope để không chặn auto upload.
+    return [SCOPE_UPLOAD]
 
 
 def _token_scopes_set(settings: dict[str, Any]) -> set[str]:
